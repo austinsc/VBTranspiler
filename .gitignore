@@ -4,3 +4,4 @@ bin/
 obj/
 *.cache
 *.cache
+/.vs/VBTranspiler/v15/Server/sqlite3

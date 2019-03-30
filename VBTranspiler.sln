@@ -1,24 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBTranspiler", "VBTranspiler\VBTranspiler.csproj", "{25523301-9F7A-45FC-A03D-C5B5A1631A0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VBTranspiler", "VBTranspiler\VBTranspiler.csproj", "{25523301-9F7A-45FC-A03D-C5B5A1631A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBTranspiler.CodeGenerator", "VBTranspiler.CodeGenerator\VBTranspiler.CodeGenerator.csproj", "{BE1CFBB7-5122-481D-8167-125F509A0026}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VBTranspiler.CodeGenerator", "VBTranspiler.CodeGenerator\VBTranspiler.CodeGenerator.csproj", "{BE1CFBB7-5122-481D-8167-125F509A0026}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBTranspiler.CodeGenerator.UnitTests", "VBTranspiler.CodeGenerator.UnitTests\VBTranspiler.CodeGenerator.UnitTests.csproj", "{CC3A4CDB-27B4-4D99-8140-DF17E49A54EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VBTranspiler.CodeGenerator.UnitTests", "VBTranspiler.CodeGenerator.UnitTests\VBTranspiler.CodeGenerator.UnitTests.csproj", "{CC3A4CDB-27B4-4D99-8140-DF17E49A54EF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DC81F5E1-3B2A-475B-9F3D-54A1F2EA4C28}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VBTranspiler.Parser.UnitTests", "VBTranspiler.Parser.UnitTests\VBTranspiler.Parser.UnitTests.csproj", "{781942CF-AFA7-4660-BC13-AC0858515609}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBTranspiler.Parser.UnitTests", "VBTranspiler.Parser.UnitTests\VBTranspiler.Parser.UnitTests.csproj", "{781942CF-AFA7-4660-BC13-AC0858515609}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBTranspiler.Parser", "VBTranspiler.Parser\VBTranspiler.Parser.csproj", "{0ED27B86-7A52-4557-9A7A-3D7C1F735797}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VBTranspiler.Parser", "VBTranspiler.Parser\VBTranspiler.Parser.csproj", "{0ED27B86-7A52-4557-9A7A-3D7C1F735797}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,5 +42,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7B58F385-E07A-4747-8B09-9B6D0B77256F}
 	EndGlobalSection
 EndGlobal
