@@ -1,46 +1,33 @@
-﻿#region Imports
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-#endregion
+﻿using System.Collections.Generic;
 
 namespace VBTranspiler.CodeGenerator.Controls
 {
-  public abstract class ControlPropertyBase
-  {
-    private string mPropertyName;
-
-    public ControlPropertyBase(string propertyName)
+    public abstract class ControlPropertyBase
     {
-      mPropertyName = propertyName;
+        private string mPropertyName;
+
+        public ControlPropertyBase(string propertyName) => mPropertyName = propertyName;
     }
-  }
 
-  public class SimpleControlProperty : ControlPropertyBase
-  {
-    private string mValue;
-
-    public SimpleControlProperty(string propertyName, string value)
-      : base(propertyName)
+    public class SimpleControlProperty : ControlPropertyBase
     {
-      mValue = value;
+        private string mValue;
+
+        public SimpleControlProperty(string propertyName, string value)
+            : base(propertyName) =>
+            mValue = value;
     }
-  }
 
-  public class NestedControlProperty : ControlPropertyBase
-  {
-    private int mArrayIndex;
-    private List<ControlPropertyBase> mProperties;
-
-    public NestedControlProperty(string propertyName, int arrayIndex, IEnumerable<ControlPropertyBase> properties)
-      : base(propertyName)
+    public class NestedControlProperty : ControlPropertyBase
     {
-      mArrayIndex = arrayIndex;
-      mProperties = new List<ControlPropertyBase>(properties);
+        private int mArrayIndex;
+        private List<ControlPropertyBase> mProperties;
+
+        public NestedControlProperty(string propertyName, int arrayIndex, IEnumerable<ControlPropertyBase> properties)
+            : base(propertyName)
+        {
+            mArrayIndex = arrayIndex;
+            mProperties = new List<ControlPropertyBase>(properties);
+        }
     }
-  }
 }

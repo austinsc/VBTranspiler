@@ -1,33 +1,23 @@
-﻿#region Import
-
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using VBTranspiler.Parser;
+﻿using System.IO;
 using VBTranspiler.CodeGenerator;
-
-#endregion
+using VBTranspiler.Parser;
 
 namespace VBTranspiler
 {
-  class Program
-  {
-    static void Main(string[] args)
+    internal class Program
     {
-      var inputFile = @"Test2.frm";
-      var outputFile = @"Test.vb";
+        private static void Main(string[] args)
+        {
+            var inputFile = @"Test2.frm";
+            var outputFile = @"Test.vb";
 
-      var parseTree = VisualBasic6Parser.ParseSource(inputFile);
-      var codeGen = new ClassModuleCodeGenerator(parseTree);
+            var parseTree = VisualBasic6Parser.ParseSource(inputFile);
+            var codeGen = new ClassModuleCodeGenerator(parseTree);
 
-      using(StreamWriter output = new StreamWriter(outputFile))
-      {
-        output.Write(codeGen.GenerateCode());
-      }
+            using (var output = new StreamWriter(outputFile))
+            {
+                output.Write(codeGen.GenerateCode());
+            }
+        }
     }
-  }
 }

@@ -1,44 +1,37 @@
-﻿#region Imports
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VBTranspiler.Parser;
-
-#endregion
 
 namespace VBTranspiler.CodeGenerator.UnitTests
 {
-  [TestClass]
-  public class TestClassModuleCodeGenerator : TestBase
-  {
-    protected override CodeGeneratorBase CreateCodeGenerator(VisualBasic6Parser.ModuleContext parseTree)
+    [TestClass]
+    public class TestClassModuleCodeGenerator : TestBase
     {
-      return new ClassModuleCodeGenerator(parseTree);
-    }
+        protected override CodeGeneratorBase CreateCodeGenerator(VisualBasic6Parser.ModuleContext parseTree) => new ClassModuleCodeGenerator(parseTree);
 
-    [TestMethod]
-    public void TestClassNameTakenFromVBNameAttributeForClassModule()
-    {
-      string inputCode =
-@"VERSION 1.0 CLASS
+        [TestMethod]
+        public void TestClassNameTakenFromVBNameAttributeForClassModule()
+        {
+            var inputCode =
+                @"VERSION 1.0 CLASS
 Attribute VB_Name = ""SomeClass""
 ";
 
-      string expectedCode =
-@"Imports System
+            var expectedCode =
+                @"Imports System
 Imports Microsoft.VisualBasic
 
 Public Class SomeClass
 End Class
 ";
 
-      VerifyGeneratedCode(inputCode, expectedCode);
-    }
+            VerifyGeneratedCode(inputCode, expectedCode);
+        }
 
-    [TestMethod]
-    public void TestPublicEnumCodeGeneration()
-    {
-      string inputCode =
-@"VERSION 1.0 CLASS
+        [TestMethod]
+        public void TestPublicEnumCodeGeneration()
+        {
+            var inputCode =
+                @"VERSION 1.0 CLASS
 Attribute VB_Name = ""SomeClass""
 
 Public Enum SomeEnum
@@ -46,8 +39,8 @@ Public Enum SomeEnum
   SECT_STUDY_DEFINITION 
 End Enum";
 
-      string expectedCode =
-@"Imports System
+            var expectedCode =
+                @"Imports System
 Imports Microsoft.VisualBasic
 
 Public Class SomeClass
@@ -58,14 +51,14 @@ Public Class SomeClass
     End Enum
 End Class
 ";
-      VerifyGeneratedCode(inputCode, expectedCode);
-    }
+            VerifyGeneratedCode(inputCode, expectedCode);
+        }
 
-    [TestMethod]
-    public void TestPrivateEnumCodeGeneration()
-    {
-      string inputCode =
-@"VERSION 1.0 CLASS
+        [TestMethod]
+        public void TestPrivateEnumCodeGeneration()
+        {
+            var inputCode =
+                @"VERSION 1.0 CLASS
 Attribute VB_Name = ""SomeClass""
 
 Private Enum SomeEnum
@@ -73,8 +66,8 @@ Private Enum SomeEnum
   SECT_STUDY_DEFINITION 
 End Enum";
 
-      string expectedCode =
-@"Imports System
+            var expectedCode =
+                @"Imports System
 Imports Microsoft.VisualBasic
 
 Public Class SomeClass
@@ -85,14 +78,14 @@ Public Class SomeClass
     End Enum
 End Class
 ";
-      VerifyGeneratedCode(inputCode, expectedCode);
-    }
+            VerifyGeneratedCode(inputCode, expectedCode);
+        }
 
-    [TestMethod]
-    public void TestNoVisibilityEnumCodeGeneration()
-    {
-      string inputCode =
-@"VERSION 1.0 CLASS
+        [TestMethod]
+        public void TestNoVisibilityEnumCodeGeneration()
+        {
+            var inputCode =
+                @"VERSION 1.0 CLASS
 Attribute VB_Name = ""SomeClass""
 
 Enum SomeEnum
@@ -100,8 +93,8 @@ Enum SomeEnum
   SECT_STUDY_DEFINITION 
 End Enum";
 
-      string expectedCode =
-@"Imports System
+            var expectedCode =
+                @"Imports System
 Imports Microsoft.VisualBasic
 
 Public Class SomeClass
@@ -112,14 +105,14 @@ Public Class SomeClass
     End Enum
 End Class
 ";
-      VerifyGeneratedCode(inputCode, expectedCode);
-    }
+            VerifyGeneratedCode(inputCode, expectedCode);
+        }
 
-    [TestMethod]
-    public void TestConstantFieldDeclCodeGeneration()
-    {
-      string inputCode =
-@"VERSION 1.0 CLASS
+        [TestMethod]
+        public void TestConstantFieldDeclCodeGeneration()
+        {
+            var inputCode =
+                @"VERSION 1.0 CLASS
 Attribute VB_Name = ""SomeClass""
 
 Private Const Constant1 As Integer = 77
@@ -132,8 +125,8 @@ Const Constant8 = #1/1/2015 2:56:00 PM#
 Const Constant9 = (5 + 1) / 2 * 3
 ";
 
-      string expectedCode =
-@"Imports System
+            var expectedCode =
+                @"Imports System
 Imports Microsoft.VisualBasic
 
 Public Class SomeClass
@@ -157,7 +150,7 @@ Public Class SomeClass
     Const Constant9 =(5 + 1) / 2 * 3
 End Class
 ";
-      VerifyGeneratedCode(inputCode, expectedCode);
+            VerifyGeneratedCode(inputCode, expectedCode);
+        }
     }
-  }
 }

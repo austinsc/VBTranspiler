@@ -1,31 +1,23 @@
-﻿#region Imports
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VBTranspiler.Parser;
-
-#endregion
 
 namespace VBTranspiler.CodeGenerator.UnitTests
 {
-  [TestClass]
-  public class TestFormCodeGenerator : TestBase
-  {
-    protected override CodeGeneratorBase CreateCodeGenerator(VisualBasic6Parser.ModuleContext parseTree)
+    [TestClass]
+    public class TestFormCodeGenerator : TestBase
     {
-      return new FormCodeGenerator(parseTree);
-    }
+        protected override CodeGeneratorBase CreateCodeGenerator(VisualBasic6Parser.ModuleContext parseTree) => new FormCodeGenerator(parseTree);
 
-    [TestMethod]
-    public void TestClassNameTakenFromVBNameAttributeForForm()
-    {
-      string inputCode =
-@"VERSION 1.0 CLASS
+        [TestMethod]
+        public void TestClassNameTakenFromVBNameAttributeForForm()
+        {
+            var inputCode =
+                @"VERSION 1.0 CLASS
 Attribute VB_Name = ""SomeForm""
 ";
 
-      string expectedCode =
-@"Imports System
+            var expectedCode =
+                @"Imports System
 Imports System.Windows.Forms
 Imports Microsoft.VisualBasic
 
@@ -35,7 +27,7 @@ Public Class SomeForm
 End Class
 ";
 
-      VerifyGeneratedCode(inputCode, expectedCode);
+            VerifyGeneratedCode(inputCode, expectedCode);
+        }
     }
-  }
 }

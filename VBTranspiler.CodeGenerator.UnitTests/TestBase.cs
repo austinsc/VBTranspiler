@@ -1,45 +1,33 @@
-﻿#region Imports
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-
-using VBTranspiler.Parser;
-using VBTranspiler.CodeGenerator;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Microsoft.CodeAnalysis.VisualBasic;
-
-#endregion
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VBTranspiler.Parser;
 
 namespace VBTranspiler.CodeGenerator.UnitTests
 {
-  public abstract class TestBase
-  {
-    protected VisualBasic6Parser.ModuleContext ParseInputSource(string source)
+    public abstract class TestBase
     {
-      using (MemoryStream memStm = new MemoryStream(Encoding.ASCII.GetBytes(source)))
-      {
-        return VisualBasic6Parser.ParseSource(memStm);
-      }
+        protected VisualBasic6Parser.ModuleContext ParseInputSource(string source)
+        {
+            using (var memStm = new MemoryStream(Encoding.ASCII.GetBytes(source)))
+            {
+                return VisualBasic6Parser.ParseSource(memStm);
+            }
+        }
+
+        protected abstract CodeGeneratorBase CreateCodeGenerator(VisualBasic6Parser.ModuleContext parseTree);
+
+        protected void VerifyGeneratedCode(string inputCode, string expectedCode)
+        {
+            var codeGen = CreateCodeGenerator(ParseInputSource(inputCode));
+            var generatedCode = codeGen.GenerateCode();
+
+            Assert.AreEqual(expectedCode, generatedCode);
+
+            //Make sure the generated code is syntactically valid
+            var parsedCode = VisualBasicSyntaxTree.ParseText(generatedCode);
+            Assert.IsFalse(parsedCode.GetCompilationUnitRoot().ContainsDiagnostics);
+        }
     }
-
-    protected abstract CodeGeneratorBase CreateCodeGenerator(VisualBasic6Parser.ModuleContext parseTree);
-
-    protected void VerifyGeneratedCode(string inputCode, string expectedCode)
-    {
-      var codeGen = CreateCodeGenerator(ParseInputSource(inputCode));
-      var generatedCode = codeGen.GenerateCode();
-
-      Assert.AreEqual(expectedCode, generatedCode);
-
-      //Make sure the generated code is syntactically valid
-      var parsedCode = VisualBasicSyntaxTree.ParseText(generatedCode);
-      Assert.IsFalse(parsedCode.GetCompilationUnitRoot().ContainsDiagnostics);
-    }
-  }
 }

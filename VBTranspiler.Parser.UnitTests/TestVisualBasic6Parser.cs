@@ -1,55 +1,47 @@
-﻿#region Imports
-
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using VBTranspiler.Parser;
-
-#endregion
 
 namespace VBTranspiler.Parser.UnitTests
 {
-  [TestClass]
-  public class TestVisualBasic6Parser
-  {
-    protected VisualBasic6Parser.ModuleContext ParseInputSource(string source)
+    [TestClass]
+    public class TestVisualBasic6Parser
     {
-      using (MemoryStream memStm = new MemoryStream(Encoding.ASCII.GetBytes(source)))
-      {
-        return VisualBasic6Parser.ParseSource(memStm);
-      }
-    }
+        protected VisualBasic6Parser.ModuleContext ParseInputSource(string source)
+        {
+            using (var memStm = new MemoryStream(Encoding.ASCII.GetBytes(source)))
+            {
+                return VisualBasic6Parser.ParseSource(memStm);
+            }
+        }
 
-    [TestMethod]
-    public void TestParsingModuleReferences()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingModuleReferences()
+        {
+            var inputSource = @"
 VERSION 5.00
 Object = ""{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0""; ""Comdlg32.ocx""
 Object = ""{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0""; ""RICHTX32.OCX""";
 
-      var parseTree = ParseInputSource(inputSource);
-      Assert.IsNotNull(parseTree.moduleReferences());
+            var parseTree = ParseInputSource(inputSource);
+            Assert.IsNotNull(parseTree.moduleReferences());
 
-      var references = parseTree.moduleReferences().moduleReference();
-      Assert.IsNotNull(references);
-      Assert.AreEqual(2, references.Length);
+            var references = parseTree.moduleReferences().moduleReference();
+            Assert.IsNotNull(references);
+            Assert.AreEqual(2, references.Length);
 
-      Assert.AreEqual(@"""{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0""", references[0].moduleReferenceValue().GetText());
-      Assert.AreEqual(@"""Comdlg32.ocx""", references[0].moduleReferenceComponent().GetText());
+            Assert.AreEqual(@"""{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0""", references[0].moduleReferenceValue().GetText());
+            Assert.AreEqual(@"""Comdlg32.ocx""", references[0].moduleReferenceComponent().GetText());
 
-      Assert.AreEqual(@"""{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0""", references[1].moduleReferenceValue().GetText());
-      Assert.AreEqual(@"""RICHTX32.OCX""", references[1].moduleReferenceComponent().GetText());
-    }
+            Assert.AreEqual(@"""{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0""", references[1].moduleReferenceValue().GetText());
+            Assert.AreEqual(@"""RICHTX32.OCX""", references[1].moduleReferenceComponent().GetText());
+        }
 
-    [TestMethod]
-    public void TestParsingModuleConfig()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingModuleConfig()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
@@ -60,20 +52,20 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False";
 
-      var parseTree = ParseInputSource(inputSource);
-      Assert.IsNotNull(parseTree.moduleConfig());
+            var parseTree = ParseInputSource(inputSource);
+            Assert.IsNotNull(parseTree.moduleConfig());
 
-      var configElems =parseTree.moduleConfig().moduleConfigElement();
+            var configElems = parseTree.moduleConfig().moduleConfigElement();
 
-      Assert.AreEqual(1, configElems.Length);
-      Assert.AreEqual("MultiUse", configElems[0].ambiguousIdentifier().GetText());
-      Assert.AreEqual("-1", configElems[0].literal().GetText());
-    }
+            Assert.AreEqual(1, configElems.Length);
+            Assert.AreEqual("MultiUse", configElems[0].ambiguousIdentifier().GetText());
+            Assert.AreEqual("-1", configElems[0].literal().GetText());
+        }
 
-    [TestMethod()]
-    public void TestParsingSingleLevelControlBlock()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingSingleLevelControlBlock()
+        {
+            var inputSource = @"
 VERSION 5.00
 Object = ""{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0""; ""Comdlg32.ocx""
 Object = ""{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0""; ""RICHTX32.OCX""
@@ -85,34 +77,34 @@ Begin VB.Form SomeForm
 End
 ";
 
-      var parseTree = ParseInputSource(inputSource);
-      var moduleControls = parseTree.controlProperties();
+            var parseTree = ParseInputSource(inputSource);
+            var moduleControls = parseTree.controlProperties();
 
-      Assert.IsNotNull(moduleControls);
-      Assert.AreEqual("VB.Form", moduleControls.cp_ControlType().GetText());
-      Assert.AreEqual("SomeForm", moduleControls.cp_ControlIdentifier().GetText());
+            Assert.IsNotNull(moduleControls);
+            Assert.AreEqual("VB.Form", moduleControls.cp_ControlType().GetText());
+            Assert.AreEqual("SomeForm", moduleControls.cp_ControlIdentifier().GetText());
 
-      var controlProperties = parseTree.controlProperties().cp_Properties();
-      Assert.IsNotNull(controlProperties);
-      Assert.AreEqual(4, controlProperties.Length);
+            var controlProperties = parseTree.controlProperties().cp_Properties();
+            Assert.IsNotNull(controlProperties);
+            Assert.AreEqual(4, controlProperties.Length);
 
-      Assert.AreEqual("BorderStyle", controlProperties[0].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual("3", controlProperties[0].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("BorderStyle", controlProperties[0].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual("3", controlProperties[0].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      Assert.AreEqual("Caption", controlProperties[1].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual(@"""Some Form""", controlProperties[1].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("Caption", controlProperties[1].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual(@"""Some Form""", controlProperties[1].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      Assert.AreEqual("ClientHeight", controlProperties[2].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual("7950", controlProperties[2].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("ClientHeight", controlProperties[2].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual("7950", controlProperties[2].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      Assert.AreEqual("MaxButton", controlProperties[3].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual("0", controlProperties[3].cp_SingleProperty().cp_PropertyValue().literal().GetText());
-    }
+            Assert.AreEqual("MaxButton", controlProperties[3].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual("0", controlProperties[3].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+        }
 
-    [TestMethod()]
-    public void TestParsingNestedLevelControlBlock()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingNestedLevelControlBlock()
+        {
+            var inputSource = @"
 VERSION 5.00
 Object = ""{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0""; ""Comdlg32.ocx""
 Object = ""{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0""; ""RICHTX32.OCX""
@@ -146,52 +138,52 @@ Begin VB.Form SomeForm
 End
 ";
 
-      var parseTree = ParseInputSource(inputSource);
-      var moduleControls = parseTree.controlProperties();
+            var parseTree = ParseInputSource(inputSource);
+            var moduleControls = parseTree.controlProperties();
 
-      Assert.AreEqual("VB.Form", moduleControls.cp_ControlType().GetText());
-      Assert.AreEqual("SomeForm", moduleControls.cp_ControlIdentifier().GetText());
+            Assert.AreEqual("VB.Form", moduleControls.cp_ControlType().GetText());
+            Assert.AreEqual("SomeForm", moduleControls.cp_ControlIdentifier().GetText());
 
-      var controlProperties = parseTree.controlProperties().cp_Properties();
-      Assert.AreEqual(5, controlProperties.Length);
+            var controlProperties = parseTree.controlProperties().cp_Properties();
+            Assert.AreEqual(5, controlProperties.Length);
 
-      Assert.AreEqual("BorderStyle", controlProperties[0].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual("3", controlProperties[0].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("BorderStyle", controlProperties[0].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual("3", controlProperties[0].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      Assert.AreEqual("Caption", controlProperties[1].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual(@"""Some Form""", controlProperties[1].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("Caption", controlProperties[1].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual(@"""Some Form""", controlProperties[1].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      Assert.AreEqual("ClientHeight", controlProperties[2].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual("7950", controlProperties[2].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("ClientHeight", controlProperties[2].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual("7950", controlProperties[2].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      Assert.AreEqual("MaxButton", controlProperties[3].cp_SingleProperty().cp_PropertyName().GetText());
-      Assert.AreEqual("0", controlProperties[3].cp_SingleProperty().cp_PropertyValue().literal().GetText());
+            Assert.AreEqual("MaxButton", controlProperties[3].cp_SingleProperty().cp_PropertyName().GetText());
+            Assert.AreEqual("0", controlProperties[3].cp_SingleProperty().cp_PropertyValue().literal().GetText());
 
-      //Frame nested control block
-      var frameControlBlock = controlProperties[4].controlProperties();
+            //Frame nested control block
+            var frameControlBlock = controlProperties[4].controlProperties();
 
-      Assert.AreEqual(7, frameControlBlock.cp_Properties().Length);
-      Assert.AreEqual("VB.Frame", frameControlBlock.cp_ControlType().GetText());
-      Assert.AreEqual("SomeFrame", frameControlBlock.cp_ControlIdentifier().GetText());
+            Assert.AreEqual(7, frameControlBlock.cp_Properties().Length);
+            Assert.AreEqual("VB.Frame", frameControlBlock.cp_ControlType().GetText());
+            Assert.AreEqual("SomeFrame", frameControlBlock.cp_ControlIdentifier().GetText());
 
-      //Button nested control block
-      var buttonControlBlock = frameControlBlock.cp_Properties().Last().controlProperties();
+            //Button nested control block
+            var buttonControlBlock = frameControlBlock.cp_Properties().Last().controlProperties();
 
-      Assert.AreEqual(12, buttonControlBlock.cp_Properties().Length);
-      Assert.AreEqual("VB.CommandButton", buttonControlBlock.cp_ControlType().GetText());
-      Assert.AreEqual("SomeButton", buttonControlBlock.cp_ControlIdentifier().GetText());
+            Assert.AreEqual(12, buttonControlBlock.cp_Properties().Length);
+            Assert.AreEqual("VB.CommandButton", buttonControlBlock.cp_ControlType().GetText());
+            Assert.AreEqual("SomeButton", buttonControlBlock.cp_ControlIdentifier().GetText());
 
-      var frxOffset = buttonControlBlock.cp_Properties()[1].cp_SingleProperty().FRX_OFFSET();
-      Assert.AreEqual(":0000", frxOffset.GetText());
+            var frxOffset = buttonControlBlock.cp_Properties()[1].cp_SingleProperty().FRX_OFFSET();
+            Assert.AreEqual(":0000", frxOffset.GetText());
 
-      var secondFrxOffset = buttonControlBlock.cp_Properties()[8].cp_SingleProperty().FRX_OFFSET();
-      Assert.AreEqual(":008A", secondFrxOffset.GetText());
-    }
+            var secondFrxOffset = buttonControlBlock.cp_Properties()[8].cp_SingleProperty().FRX_OFFSET();
+            Assert.AreEqual(":008A", secondFrxOffset.GetText());
+        }
 
-    [TestMethod()]
-    public void TestParsingBeginPropertyBlock()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingBeginPropertyBlock()
+        {
+            var inputSource = @"
 VERSION 5.00
 Object = ""{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0""; ""Comdlg32.ocx""
 Object = ""{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0""; ""RICHTX32.OCX""
@@ -232,42 +224,42 @@ Begin VB.Form SomeForm
 End
 ";
 
-      var parseTree = ParseInputSource(inputSource);
-      var moduleControls = parseTree.controlProperties();
-      Assert.AreEqual(2, moduleControls.cp_Properties().Length);
+            var parseTree = ParseInputSource(inputSource);
+            var moduleControls = parseTree.controlProperties();
+            Assert.AreEqual(2, moduleControls.cp_Properties().Length);
 
-      var frameProp = moduleControls.cp_Properties()[1];
-      Assert.AreEqual("SomeFrame", frameProp.controlProperties().cp_ControlIdentifier().GetText());
+            var frameProp = moduleControls.cp_Properties()[1];
+            Assert.AreEqual("SomeFrame", frameProp.controlProperties().cp_ControlIdentifier().GetText());
 
-      var firstNestedProp = frameProp.controlProperties().cp_Properties()[1];
+            var firstNestedProp = frameProp.controlProperties().cp_Properties()[1];
 
-      Assert.AreEqual("ColumnHeader", firstNestedProp.cp_NestedProperty().ambiguousIdentifier().GetText());
-      Assert.IsNotNull(firstNestedProp.cp_NestedProperty());
-      Assert.AreEqual(7, firstNestedProp.cp_NestedProperty().cp_Properties().Length);
+            Assert.AreEqual("ColumnHeader", firstNestedProp.cp_NestedProperty().ambiguousIdentifier().GetText());
+            Assert.IsNotNull(firstNestedProp.cp_NestedProperty());
+            Assert.AreEqual(7, firstNestedProp.cp_NestedProperty().cp_Properties().Length);
 
-      var secondNestedProp = firstNestedProp.cp_NestedProperty().cp_Properties()[4];
+            var secondNestedProp = firstNestedProp.cp_NestedProperty().cp_Properties()[4];
 
-      Assert.AreEqual("Font", secondNestedProp.cp_NestedProperty().ambiguousIdentifier().GetText());
-      Assert.IsNotNull(secondNestedProp.cp_NestedProperty());
-      Assert.AreEqual(8, secondNestedProp.cp_NestedProperty().cp_Properties().Length);
-    }
+            Assert.AreEqual("Font", secondNestedProp.cp_NestedProperty().ambiguousIdentifier().GetText());
+            Assert.IsNotNull(secondNestedProp.cp_NestedProperty());
+            Assert.AreEqual(8, secondNestedProp.cp_NestedProperty().cp_Properties().Length);
+        }
 
-    [TestMethod()]
-    public void TestParsingPropertyReturningObject()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingPropertyReturningObject()
+        {
+            var inputSource = @"
 Private Property Get iLibraryNode_PopupMenu() As Object
 Dim obValues as clsValues
 End Property";
 
-      //Previous versions of the grammer couldn't handle Object as a type so simply check for no parse errors.
-      ParseInputSource(inputSource);
-    }
+            //Previous versions of the grammer couldn't handle Object as a type so simply check for no parse errors.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingWhileLoopWithBlankLinesAtBodyEnd()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingWhileLoopWithBlankLinesAtBodyEnd()
+        {
+            var inputSource = @"
 Private Sub Test()
 
   Dim obValues As Object
@@ -280,14 +272,14 @@ Private Sub Test()
   
 End Sub
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingOptionExplicitAfterMemberVariables()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingOptionExplicitAfterMemberVariables()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
@@ -305,14 +297,14 @@ Private A As String
 Private B As String
 Private C As String
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingOptionStatementAfterMemberVariableDeclartion()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingOptionStatementAfterMemberVariableDeclartion()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 Private A As String
 Private B As String
@@ -324,28 +316,28 @@ Private C as String
 Option Compare Text
 Option Base 0
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingMemberVariableDeclartionAfterOptionStatement()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingMemberVariableDeclartionAfterOptionStatement()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 Option Explicit
 
 Private A As String
 Private B As String
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingTypeHintsOnArgumentIdentifiers()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingTypeHintsOnArgumentIdentifiers()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 Option Explicit
 
@@ -368,14 +360,14 @@ Event SomeEvent(a$)
 
 Declare Function Func Lib ""Foo.dll"" (a$)
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingTypeHintsOnNumericLiterals()
-    {
-       string inputSource = @"
+        [TestMethod]
+        public void TestParsingTypeHintsOnNumericLiterals()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 Option Explicit
 
@@ -389,14 +381,14 @@ Public Sub Foo()
 
 End Sub
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingTypeHintsOnForLoopIndexVar()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingTypeHintsOnForLoopIndexVar()
+        {
+            var inputSource = @"
 VERSION 1.0 CLASS
 Option Explicit
 
@@ -411,14 +403,14 @@ Public Sub Foo()
 
 End Sub
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingOctalLiteral()
-    {
-      string inputSource = @"
+        [TestMethod]
+        public void TestParsingOctalLiteral()
+        {
+            var inputSource = @"
 Sub OctalTest()
 
 Dim foo As Long
@@ -427,14 +419,14 @@ Dim foo As Long
 	
 End Sub
 ";
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestMemberCallExpressionSplitOverMultipleLines()
-    {
-      string inputSource = @"Public Sub foo() 
+        [TestMethod]
+        public void TestMemberCallExpressionSplitOverMultipleLines()
+        {
+            var inputSource = @"Public Sub foo() 
 
     If .CellSet(0) _
 		.Value = 0 Then
@@ -443,64 +435,64 @@ End Sub
 	
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestNestedProcedureCallReturningArray()
-    {
-      string inputSource = @"Private Sub Foo()
+        [TestMethod]
+        public void TestNestedProcedureCallReturningArray()
+        {
+            var inputSource = @"Private Sub Foo()
 
   If IsNull(SomeFuncReturningArray(bar)(0)) Then
   End If
   
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestExplicitCallStatementSplitOverMultipleLines()
-    {
-      string inputSource = @"Private Sub Test()
+        [TestMethod]
+        public void TestExplicitCallStatementSplitOverMultipleLines()
+        {
+            var inputSource = @"Private Sub Test()
 
     Call foo.bar. _
         baz(, , abc, xyz)
 
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestOnErrorGotoStatementEndingInColon()
-    {
-      string inputSource = @"Private Sub Test()
+        [TestMethod]
+        public void TestOnErrorGotoStatementEndingInColon()
+        {
+            var inputSource = @"Private Sub Test()
 On Error GoTo ErrorHandler:
 ErrorHandler:
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingModuleReferenceToVBPProjectFile()
-    {
-      string inputSource = @"VERSION 5.00
+        [TestMethod]
+        public void TestParsingModuleReferenceToVBPProjectFile()
+        {
+            var inputSource = @"VERSION 5.00
 Object = ""*\A..\..\SomeFile.vbp""";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingStringConcatenationSplitOverMultipleLines()
-    {
-      string inputSource = @"Sub Test()
+        [TestMethod]
+        public void TestParsingStringConcatenationSplitOverMultipleLines()
+        {
+            var inputSource = @"Sub Test()
 
 x = ""foo"" _
 & ""bar""
@@ -510,14 +502,14 @@ x = ""foo"" & _
 
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingControlArrayProperties()
-    {
-      string inputSource = @"Begin VB.Form Form
+        [TestMethod]
+        public void TestParsingControlArrayProperties()
+        {
+            var inputSource = @"Begin VB.Form Form
    Begin TabDlg.SSTab Tab1
       TabCaption(0)   =   ""Tab 1""
       Tab(0).ControlEnabled = 0   'False
@@ -525,14 +517,14 @@ End Sub";
    End
 End";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestWithNewStatement()
-    {
-      string inputSource = @"Private Sub Test()
+        [TestMethod]
+        public void TestWithNewStatement()
+        {
+            var inputSource = @"Private Sub Test()
 
   With New clsFoo
     .Display
@@ -540,31 +532,31 @@ End";
   
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingOfArgumentWithEnumerationDefaultValue()
-    {
-      string inputSource = @"Private Sub Test(Optional ByVal foo As enmSomeEnum = enmSomeEnum.Bar)
+        [TestMethod]
+        public void TestParsingOfArgumentWithEnumerationDefaultValue()
+        {
+            var inputSource = @"Private Sub Test(Optional ByVal foo As enmSomeEnum = enmSomeEnum.Bar)
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
-    }
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
 
-    [TestMethod()]
-    public void TestParsingArrayVariableWithTypeHint()
-    {
-      string inputSource = @"Private Sub Test()
+        [TestMethod]
+        public void TestParsingArrayVariableWithTypeHint()
+        {
+            var inputSource = @"Private Sub Test()
 
 Dim asFoo$()
 
 End Sub";
 
-      //Used to fail with a parse error.
-      ParseInputSource(inputSource);
+            //Used to fail with a parse error.
+            ParseInputSource(inputSource);
+        }
     }
-  }
 }
