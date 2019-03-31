@@ -176,12 +176,12 @@ namespace VBTranspiler.CodeGenerator
                 if (initialiserExpr.StartsWith("#"))
                 {
                     var trimmedInitialiser = initialiserExpr.Trim('#');
-                    var parsedVal = new DateTime();
+                    var parsedVal = DateTime.Parse(trimmedInitialiser);
 
-                    if (trimmedInitialiser.Contains("AM") || trimmedInitialiser.Contains("PM"))
-                        parsedVal = DateTime.ParseExact(trimmedInitialiser, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
-                    else
-                        parsedVal = DateTime.ParseExact(trimmedInitialiser, "M/d/yyyy", CultureInfo.InvariantCulture);
+                    //if (trimmedInitialiser.Contains("AM") || trimmedInitialiser.Contains("PM"))
+                    //    parsedVal = DateTime.ParseExact(trimmedInitialiser, "M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
+                    //else
+                    //    parsedVal = DateTime.ParseExact(trimmedInitialiser, "M/d/yyyy", CultureInfo.InvariantCulture);
 
                     initialiser = SyntaxFactory.DateLiteralExpression(SyntaxFactory.DateLiteralToken(initialiserExpr, parsedVal));
                 }

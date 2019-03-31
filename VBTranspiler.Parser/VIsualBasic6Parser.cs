@@ -45,14 +45,14 @@ namespace VBTranspiler.Parser
         {
             mIndent += 1;
 
-            Debug.Write("".PadLeft(mIndent));
-            Debug.WriteLine("Enter {0} {1}", mParser.RuleNames[ctx.RuleIndex], ctx.Start.Text);
+            //Debug.Write("".PadLeft(mIndent));
+            //Debug.WriteLine("Enter {0} {1}", mParser.RuleNames[ctx.RuleIndex], ctx.Start.Text);
         }
 
         public void ExitEveryRule(ParserRuleContext ctx)
         {
-            Debug.Write("".PadLeft(mIndent));
-            Debug.WriteLine(string.Format("Exit {0}", mParser.RuleNames[ctx.RuleIndex]));
+            //Debug.Write("".PadLeft(mIndent));
+            //Debug.WriteLine(string.Format("Exit {0}", mParser.RuleNames[ctx.RuleIndex]));
 
             mIndent -= 1;
         }
